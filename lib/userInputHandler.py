@@ -115,8 +115,13 @@ class UserInputHandler():
                 try:
                     answer = int(input("INPUT baud rate :"))
                     return int(answer)
+
+                except ValueError:
+                    print(f"[{CLI_NAME}] Input integer only.")
+
                 except Exception as err:
                     print(err)
+
             case "b) ../":
                 self.port = self.__choose_port_init()
 
@@ -153,10 +158,21 @@ class UserInputHandler():
             case "x) ../" : return [None, None]
         
     
-    # input_msg_mannaul
-    # @detail : 전송할 값을 수동으로 입력 받는 메소드
     def input_msg_mannaul(self):
+        '''
+        # input_msg_mannaul()
+        전송할 값을 수동으로 입력 받는 메소드
+
+        Params :
+        
+        Returns :
+            `list` `[msg_id, payload]`
+            msg_id `int`  - Message ID
+            payload `list` - payload data
+        '''
+
         print(f"[{CLI_NAME}] Input an value as integer")
+
         msg_id : int = None
         while msg_id == None or (msg_id<0 or msg_id>65536):
             msg_id = self.__input_int(f"[{CLI_NAME}] MSG ID : ")
@@ -164,14 +180,20 @@ class UserInputHandler():
         print(f"[{CLI_NAME}] Input 'x' if you want to end")
         tmp:int = None
         payload : list = []
+
         while True:
-            while tmp == None or (tmp<0 or tmp>255):
-                tmp = self.__input_int(f"[{CLI_NAME}] Payload ({len(payload)}) : ", "x")
-                if tmp == "x" : 
-                    return [msg_id, payload]
+            tmp = self.__input_int(f"[{CLI_NAME}] Payload ({len(payload)}) : ", "x")
+
+            if tmp == "x" : 
+                break
+
+            if tmp == None or (tmp<0 or tmp>255):
+                continue
 
             payload.append(tmp)
             tmp = None
+
+        return [msg_id, payload]
 
 
     # __input_int
@@ -182,7 +204,11 @@ class UserInputHandler():
             if(endCode == data) : return endCode
             return int(data)
 
+        except ValueError:
+            print(f"[{CLI_NAME}] Input integer only.")
+            return self.__input_int(text, endCode)
+
         except Exception as err:
             print(err)
-            return self.input_hex(text, endCode)
+            return self.__input_int(text, endCode)
 

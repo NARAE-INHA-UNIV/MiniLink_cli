@@ -302,7 +302,7 @@ class MiniLink():
             tx = tx + [(int(data[0]) & 0xff), (int(data[0]) >> 8)]
             tx = tx + data[1]
 
-            crc = int(self.calculate_crc(tx, len(tx)+2))
+            crc = int(self.__calculate_crc(tx, len(tx)+2))
             tx = tx + [(crc >> 8), (crc & 0xff)]
 
             self.ser.write(bytes(tx))
